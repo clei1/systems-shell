@@ -79,17 +79,19 @@ int redirection(char ** line){
   }
 
   if(direction){
-    *filename = 0; //changes "<" to 0
+    *filename = 0; //changes "<" or ">" to 0
     filename ++;
     if(direction == SIN){
-      int in = open(filename, O_CREAT);
-      int sstdin = dup(0);
-      dup2(in, 0);
+      int in = open(filename, O_CREAT); //created file descriptor, to replace normal stdin during redirection
+      int sstdin = dup(0); //creates alias sstdin to stdin, to be used after redirection complete
+      dup2(in, 0); //changes normal stdin to the stdin we want to use
 
-      execute_args(line);
-    
-      dup2(sstdin, 0);
-      close(sstdin);
+      execute_args(line); //executes stuff like normal, but with changed stdin
+
+      //parent executes this
+      dup2(sstdin, 0); //resets stdin back to 0 using alias sstdin to stdin created before
+      close(sstdin); //closes no longer needed alias
+      close(in); //closes file, not sure if needed
     }
     else{
       int out = open(filename, O_CREAT);
@@ -101,6 +103,7 @@ int redirection(char ** line){
     
       dup2(sstdout, 1);
       close(sstdout);
+      close(out);
     }
   }
   return direction;

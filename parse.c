@@ -39,7 +39,7 @@ void special_exec(char ** line){
     }
 }
 
-void pipes(char ** line){
+void piping(char ** line){
   //"ls -l | wc"
   
 }
@@ -91,7 +91,6 @@ int redirection(char ** line){
       //parent executes this
       dup2(sstdin, 0); //resets stdin back to 0 using alias sstdin to stdin created before
       close(sstdin); //closes no longer needed alias
-      close(in); //closes file, not sure if needed
     }
     else{
       int out = open(filename, O_CREAT);
@@ -103,7 +102,6 @@ int redirection(char ** line){
     
       dup2(sstdout, 1);
       close(sstdout);
-      close(out);
     }
   }
   return direction;
@@ -113,14 +111,23 @@ int redirection(char ** line){
 
 void exec(char * command){
   while(command){
-    
-    char ** line = parse_args(strsep(& command, ";"));
-    special_exec(line);
 
-    if(redirection(line) == 0){
-      execute_args(line);
+    char * curr = strsep(& command, ";");
+    
+    if(strchr(curr, '|')){
+      piping(parse_args(curr));
     }
+    else{
+      if(strchr(curr, '>') == NULL && strchr(curr, '<') == NULL){
+	special_exec(parse_args(curr));
+	execute_args(parse_args(curr));
+      }
+      else
+	redirection(parse_args(curr));
+    }
+    
   }
+ 
 }
 
 int main(){

@@ -78,7 +78,7 @@ void redirecting(int std, char ** line){
   char * filename = line[index + 1];
   line[index] = 0;
 
-  int fd = open(filename, O_CREAT);
+  int fd = open(filename, O_CREAT, 0644);
   redirect(std, fd, line);
 }
 
@@ -86,21 +86,26 @@ void redirecting(int std, char ** line){
 void exec(char * command){
   while(command){
 
-    char * curr = strsep(& command, ";");
+    char s[200];
+    char * line = strsep(& command, ";");
+    strcpy(s, line);
+    char ** cmd = parse_args(line);
     
-    if(strchr(curr, '|')){
-      piping(parse_args(curr));
+    if(strchr(s, '|')){
+      piping(cmd);
     }
-    else if(strchr(curr, '>')){
-      redirecting(1, parse_args(curr));
+    else if(strchr(s, '>')){
+      redirecting(1, cmd);
     }
-    else if(strchr(curr, '<')){
-      redirecting(0, parse_args(curr));
+    else if(strchr(s, '<')){
+      redirecting(0, cmd);
     }
     else{
-      special_exec(parse_args(curr));
-      execute_args(parse_args(curr));
+      special_exec(cmd);
+      execute_args(cmd);
     }
+
+    free(cmd);
   }
  
 }

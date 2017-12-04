@@ -1,4 +1,4 @@
-all: aesthetics shell.h shell.c
+all: aesthetics headers.h shell.c command.c parse.c redirect.c spoon.c
 	gcc shell.c
 
 clean: *.out

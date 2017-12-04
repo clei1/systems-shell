@@ -19,6 +19,5 @@ char ** parse_args(char* line) {
       index += 1;
     }
   }
-  printarr(args);
   return args;
 }

@@ -25,6 +25,7 @@ char ** parse_args(char* line) {
       index += 1;
     }
   }
+  printarr(args);
   return args;
 }
 
@@ -60,10 +61,10 @@ void execute_args(char ** line){
 void redirect(int std, int fd, char **line){
   int sstdin = dup(std);
   dup2(fd, std);
-  close(fd);
 
   execute_args(line);
-  
+
+  close(fd);
   dup2(sstdin, std);
   close(sstdin);
 }
@@ -78,7 +79,8 @@ void redirecting(int std, char ** line){
   char * filename = line[index + 1];
   line[index] = 0;
 
-  int fd = open(filename, O_CREAT, 0644);
+  //need O_RDWR else it breaks
+  int fd = open(filename, O_CREAT | O_RDWR, 0644);
   redirect(std, fd, line);
 }
 

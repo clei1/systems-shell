@@ -57,56 +57,30 @@ void execute_args(char ** line){
   }
 }
 
+void redirect(int std, int fd, char **line){
+  int sstdin = dup(std);
+  dup2(fd, std);
+  close(fd);
 
-int redirection(char ** line){
-  printarr(line);
-
-  int SIN = 1;
-  int SOUT = 2;
-  int direction = 0;
+  execute_args(line);
   
-  char * filename = line[0];
-  while(filename){
-    if(strcmp(filename, "<") == 0){
-      direction = SIN;
-      break;
-    }
-    else if(strcmp(filename, ">") == 0){
-      direction = SOUT;
-      break;
-    }
-    filename ++;
-  }
-
-  if(direction){
-    *filename = 0; //changes "<" or ">" to 0
-    filename ++;
-    if(direction == SIN){
-      int in = open(filename, O_CREAT); //created file descriptor, to replace normal stdin during redirection
-      int sstdin = dup(0); //creates alias sstdin to stdin, to be used after redirection complete
-      dup2(in, 0); //changes normal stdin to the stdin we want to use
-
-      execute_args(line); //executes stuff like normal, but with changed stdin
-
-      //parent executes this
-      dup2(sstdin, 0); //resets stdin back to 0 using alias sstdin to stdin created before
-      close(sstdin); //closes no longer needed alias
-    }
-    else{
-      int out = open(filename, O_CREAT);
-    
-      int sstdout = dup(1);
-      dup2(out, 1);
-
-      execute_args(line);
-    
-      dup2(sstdout, 1);
-      close(sstdout);
-    }
-  }
-  return direction;
+  dup2(sstdin, std);
+  close(sstdin);
 }
 
+void redirecting(int std, char ** line){
+  int index = 0;
+  while(line[index]){
+    if(strcmp(line[index], "<") == 0 || strcmp(line[index], ">") == 0 )
+      break;
+    index ++;
+  } 
+  char * filename = line[index + 1];
+  line[index] = 0;
+
+  int fd = open(filename, O_CREAT);
+  redirect(std, fd, line);
+}
 
 
 void exec(char * command){
@@ -117,15 +91,16 @@ void exec(char * command){
     if(strchr(curr, '|')){
       piping(parse_args(curr));
     }
-    else{
-      if(strchr(curr, '>') == NULL && strchr(curr, '<') == NULL){
-	special_exec(parse_args(curr));
-	execute_args(parse_args(curr));
-      }
-      else
-	redirection(parse_args(curr));
+    else if(strchr(curr, '>')){
+      redirecting(1, parse_args(curr));
     }
-    
+    else if(strchr(curr, '<')){
+      redirecting(0, parse_args(curr));
+    }
+    else{
+      special_exec(parse_args(curr));
+      execute_args(parse_args(curr));
+    }
   }
  
 }

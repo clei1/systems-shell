@@ -1,0 +1,32 @@
+#include <string.h>
+#include <stdlib.h>
+
+void prompt(){
+  //hostname
+  char prompt[128];
+  gethostname(prompt, sizeof prompt);
+  if( strstr(prompt, ".local") ){
+    char * local = strstr(prompt, ".local");
+    * local = 0;
+  }
+  strcat(prompt, ":");
+
+  //current directory
+  char cwd[128];
+  getcwd(cwd, sizeof cwd);
+  if( strrchr(cwd, '/') ){
+    strcat(prompt, strrchr(cwd, '/') + 1);
+  }
+  else{
+    strcat(prompt, cwd);
+  }
+  strcat(prompt, " ");
+
+  //user
+  char usr[128];
+  getlogin_r(usr, sizeof usr);
+  strcat(prompt, usr);
+  strcat(prompt, "$ ");
+
+  printf("fakeshell %s", prompt);
+}

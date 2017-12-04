@@ -1,9 +1,8 @@
-all: aesthetics parse.c
-	gcc parse.c
+all: aesthetics shell.h shell.c
+	gcc shell.c
 
-clean: *.out *~
+clean: *.out
 	rm *.out
-	rm *~
 
 run: a.out
 	./a.out

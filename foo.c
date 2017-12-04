@@ -5,7 +5,19 @@
 #include <sys/stat.h>
 
 int main() {
+  int in, out;
+  char *test[] = {"cat", "test", NULL};
 
+  // open input and output files
+
+  in = open("scores", O_RDONLY);
+  out = open("out", O_WRONLY | O_TRUNC | O_CREAT);
+
+  dup2(in, 0);
+  dup2(out, 1);
+  close(in);
+  close(out);
+  execvp(test[0], test);
 }
 
 

@@ -1,7 +1,7 @@
 # Project 1: Shell-ing out commands
-# Connie Lei
+## Connie Lei
 
-Features:
+### Features:
 
 	Can separate multiple commands on a line with `;`
 	Single redirection  `>` and `<` functionality (will cause files to be overwritten like normally)
@@ -12,18 +12,18 @@ Features:
 	Prompt displayed
 	Random/extra spaces are taken care of
 
-Attempted:
+### Attempted:
 
 	The following did not end up working, but have been left in the code, commented out.
 	Worked on multiple redirection in the mess that is foo.c
 	Tried making mutliple pipes work, but then started to go down rabbit holes and never getting out, kept breaking
 	
-Bugs:
+### Bugs:
 
 	After using `cd` to go up a directory level, some commands begin to break for some unknown reason. Using `cd ..` and then `ls` will sometimes break it. It seems to happen randomly and I've to debug this, but my head isn't working right now. Moving down a directory will give an error `/usr/bin/cd: line 4: cd: systems-shell: No such file or directory` but it will still sometimes move you down to the directory.
 	The prompt will break depending on what machine you are using. I tested it while sshing into the school computers and also while on the the school computers and it comes out funny like. My laptop gives me `alohomora:systems-shell connielei$ ` so that is the one I based the prompt off of. It will probably break if you have fancy path customizations or something.
 	
-Files & Function Headers:
+### Files & Function Headers:
 
 I actually had one large file and aesthetics, but I broke most of it up for the sake of cutting it up.
 
